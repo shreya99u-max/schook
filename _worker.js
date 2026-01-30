@@ -2,7 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Data Submit karne ke liye
+    // Form Submit karne ke liye
     if (url.pathname === "/api/submit" && request.method === "POST") {
       try {
         const data = await request.json();
@@ -16,7 +16,7 @@ export default {
       }
     }
 
-    // Data Dekhne ke liye (Admin)
+    // Admin Dashboard ka data dekhne ke liye
     if (url.pathname === "/api/responses") {
       try {
         const list = await env.DATA.list();
@@ -34,7 +34,7 @@ export default {
       }
     }
 
-    // Baki sari files (html/css) load karne ke liye
+    // Site ki baki files load karne ke liye
     return env.ASSETS.fetch(request);
   }
 };
