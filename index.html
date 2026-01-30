@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <style>
+        body { font-family: sans-serif; background: #667eea; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 100%; padding: 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>📝 Registration Form</h2>
+        <form id="regForm">
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="date" id="dob" required>
+            <input type="tel" id="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" required>
+            <input type="text" id="father" placeholder="Father's Name" required>
+            <input type="text" id="aadhar" placeholder="Aadhar (12 digits)" pattern="[0-9]{12}" required>
+            <button type="submit">Submit Details</button>
+        </form>
+        <p id="msg" style="display:none; text-align:center; color: green; margin-top:10px;"></p>
+    </div>
+    <script>
+        document.getElementById('regForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('name').value,
+                dob: document.getElementById('dob').value,
+                mobile: document.getElementById('mobile').value,
+                father: document.getElementById('father').value,
+                aadhar: document.getElementById('aadhar').value
+            };
+            const res = await fetch('/api/submit', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            if(res.ok) {
+                document.getElementById('msg').innerText = "✅ Successfully Submitted!";
+                document.getElementById('msg').style.display = "block";
+                document.getElementById('regForm').reset();
+            }
+        });
+    </script>
+</body>
+</html>
+
