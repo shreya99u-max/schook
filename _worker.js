@@ -2,11 +2,12 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Form Submit karne ke liye
+    // 1. Data Save karne ka logic
     if (url.pathname === "/api/submit" && request.method === "POST") {
       try {
         const data = await request.json();
         const id = `std_${Date.now()}`;
+        // Yahan 'DATA' wahi hai jo aapne Settings > Bindings mein likha hai
         await env.DATA.put(id, JSON.stringify(data));
         return new Response(JSON.stringify({ success: true }), {
           headers: { "Content-Type": "application/json" }
@@ -16,7 +17,7 @@ export default {
       }
     }
 
-    // Admin Dashboard ka data dekhne ke liye
+    // 2. Admin Data dekhne ka logic (No Password)
     if (url.pathname === "/api/responses") {
       try {
         const list = await env.DATA.list();
@@ -34,7 +35,7 @@ export default {
       }
     }
 
-    // Site ki baki files load karne ke liye
+    // 3. Static files (index.html, etc.) load karne ke liye
     return env.ASSETS.fetch(request);
   }
 };
