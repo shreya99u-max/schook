@@ -5,46 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
     <style>
-        body { font-family: sans-serif; background: #667eea; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 100%; padding: 15px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .form-container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 100%; max-width: 450px; }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: 600; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
+        input:focus { border-color: #667eea; }
+        .submit-btn { background: #4CAF50; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .submit-btn:hover { background: #45a049; }
+        #msg { text-align: center; margin-top: 15px; padding: 10px; border-radius: 5px; display: none; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>📝 Registration Form</h2>
-        <form id="regForm">
-            <input type="text" id="name" placeholder="Full Name" required>
-            <input type="date" id="dob" required>
-            <input type="tel" id="mobile" placeholder="Mobile Number" pattern="[0-9]{10}" required>
-            <input type="text" id="father" placeholder="Father's Name" required>
-            <input type="text" id="aadhar" placeholder="Aadhar (12 digits)" pattern="[0-9]{12}" required>
-            <button type="submit">Submit Details</button>
+    <div class="form-container">
+        <h2>📝 Student Form</h2>
+        <div id="msg"></div>
+        <form id="studentForm">
+            <div class="form-group">
+                <label>👤 Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label>📅 Date of Birth</label>
+                <input type="date" id="dob" required>
+            </div>
+            <div class="form-group">
+                <label>📱 Mobile Number</label>
+                <input type="tel" id="mobile" pattern="[0-9]{10}" placeholder="10 digits" required>
+            </div>
+            <div class="form-group">
+                <label>👨‍👦 Father's Name</label>
+                <input type="text" id="father" required>
+            </div>
+            <div class="form-group">
+                <label>🪪 Aadhar Number</label>
+                <input type="text" id="aadhar" pattern="[0-9]{12}" placeholder="12 digits" required>
+            </div>
+            <button type="submit" class="submit-btn" id="btnText">✅ Submit Details</button>
         </form>
-        <p id="msg" style="display:none; text-align:center; color: green; margin-top:10px;"></p>
     </div>
+
     <script>
-        document.getElementById('regForm').addEventListener('submit', async (e) => {
+        const form = document.getElementById('studentForm');
+        const msg = document.getElementById('msg');
+        const btn = document.getElementById('btnText');
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const data = {
+            
+            // Button ko disable karein taaki baar baar click na ho
+            btn.disabled = true;
+            btn.innerText = "⏳ Sending...";
+
+            const formData = {
                 name: document.getElementById('name').value,
                 dob: document.getElementById('dob').value,
                 mobile: document.getElementById('mobile').value,
                 father: document.getElementById('father').value,
                 aadhar: document.getElementById('aadhar').value
             };
-            const res = await fetch('/api/submit', {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            if(res.ok) {
-                document.getElementById('msg').innerText = "✅ Successfully Submitted!";
-                document.getElementById('msg').style.display = "block";
-                document.getElementById('regForm').reset();
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    msg.innerText = "✅ Form Submitted Successfully!";
+                    msg.className = "success";
+                    msg.style.display = "block";
+                    form.reset();
+                } else {
+                    throw new Error("Server error");
+                }
+            } catch (err) {
+                msg.innerText = "❌ Error: Could not connect to database.";
+                msg.className = "error";
+                msg.style.display = "block";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "✅ Submit Details";
             }
         });
     </script>
 </body>
 </html>
-
